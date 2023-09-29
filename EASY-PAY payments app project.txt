@@ -1,0 +1,199 @@
+// EASY-PAY payments app
+
+package Paybills;
+import java.util.Scanner;
+import java.util.HashMap;
+
+class BankAccount {
+    private String accountNumber;
+    private double balance;
+
+    public BankAccount(String accountNumber, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.balance = initialBalance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+        System.out.println("Deposited: $" + amount);
+    }
+
+    public void withdraw(double amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            
+            
+            
+            System.out.println("Withdrawn: $" + amount);
+        } else {
+            System.out.println("Insufficient balance.");
+        }
+    }
+    
+    public void displayBalance() {
+        System.out.println("Current Balance: $" + balance);
+    }
+}
+
+class PaymentApp {
+    private HashMap<String, BankAccount> accounts;
+
+    public PaymentApp() {
+        accounts = new HashMap<>();
+    }
+
+    public void createAccount(String accountNumber, double initialBalance) {
+        BankAccount bankAccount = new BankAccount(accountNumber, initialBalance);
+        accounts.put(accountNumber, bankAccount);
+        System.out.println("Account created successfully.");
+    }
+
+    
+    public BankAccount getAccount(String accountNumber) {
+        return accounts.get(accountNumber);
+    }
+
+    public void bankTransfer(String senderAccount, String recipientAccount, double amount) {
+        BankAccount sender = getAccount(senderAccount);
+        BankAccount recipient = getAccount(recipientAccount);
+
+        if (sender != null && recipient != null) {
+            sender.withdraw(amount);
+            recipient.deposit(amount);
+            System.out.println("Transferred $" + amount + " from account " + senderAccount + " to account " + recipientAccount);
+        } else {
+            System.out.println("Invalid account number(s).");
+        }
+    }
+    
+        public void selfAccountTransfer(String accountNumber, double amount) {
+            BankAccount account = getAccount(accountNumber);
+
+            if (account != null) {
+                account.withdraw(amount);
+                account.deposit(amount);
+                System.out.println("Transferred $" + amount + " within your account " + accountNumber);
+            } else {
+                System.out.println("Invalid account number.");
+            }
+        }
+
+        public void checkBankBalance(String accountNumber) {
+            BankAccount account = getAccount(accountNumber);
+
+            if (account != null) {
+                account.displayBalance();
+            } else {
+                System.out.println("Invalid account number.");
+            }
+        }
+
+        public void performBillPayment(String accountNumber, double amount, String billType) {
+            BankAccount account = getAccount(accountNumber);
+
+            if (account != null) {
+                account.withdraw(amount);
+                System.out.println("Paid $" + amount + " for " + billType + " bill from account " + accountNumber);
+            } else {
+                System.out.println("Invalid account number.");
+            }
+        }
+    }
+public class Paybills {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        PaymentApp paymentApp = new PaymentApp();
+
+        while (true) {
+            System.out.println("\nPayment App Menu:");
+            System.out.println("1. Create Account");
+            System.out.println("2. Bank Transfer");
+            System.out.println("3. Self Account Transfer");
+            System.out.println("4. Check Bank Balance");
+            System.out.println("5. Bill Payment");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+            
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter your account number: ");
+                    String accountNumber = scanner.nextLine();
+                    System.out.print("Enter initial balance: ");
+                    double initialBalance = scanner.nextDouble();
+                    paymentApp.createAccount(accountNumber, initialBalance);
+                    break;
+                case 2:
+                    System.out.print("Enter sender account number: ");
+                    String senderAccount = scanner.nextLine();
+                    System.out.print("Enter recipient account number: ");
+                    String recipientAccount = scanner.nextLine();
+                    System.out.print("Enter amount to transfer: ");
+                    double transferAmount = scanner.nextDouble();
+                    paymentApp.bankTransfer(senderAccount, recipientAccount, transferAmount);
+                    break;
+                case 3:
+                    System.out.print("Enter your account number: ");
+                    String selfAccount = scanner.nextLine();
+                    System.out.print("Enter amount to transfer within your account: ");
+                    double selfTransferAmount = scanner.nextDouble();
+                    paymentApp.selfAccountTransfer(selfAccount, selfTransferAmount);
+                    break;
+                case 4:
+                    System.out.print("Enter account number: ");
+                    String checkBalanceAccount = scanner.nextLine();
+                    paymentApp.checkBankBalance(checkBalanceAccount);
+                    break;
+                case 5:
+                    System.out.print("Enter your account number: ");
+                    String billAccount = scanner.nextLine();
+                    System.out.print("Enter bill amount: ");
+                    double billAmount = scanner.nextDouble();
+                    System.out.println("Select bill type:");
+                    System.out.println("1. Electricity Bill");
+                    System.out.println("2. Mobile Recharge");
+                    System.out.println("3. EMI Loan");
+                    System.out.print("Enter your choice: ");
+                    int billTypeChoice = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline character
+
+                    String billType;
+                    switch (billTypeChoice) {
+                        case 1:
+                            billType = "Electricity";
+                            break;
+                        case 2:
+                            billType = "Mobile Recharge";
+                            break;
+                        case 3:
+                            billType = "EMI Loan";
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Using 'Other' as bill type.");
+                            billType = "Other";
+                    }
+
+                    paymentApp.performBillPayment(billAccount, billAmount, billType);
+                    break;
+                    
+                case 6:
+                    System.out.println("Exiting the program.");
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please choose a valid option.");
+            }
+        }
+    }
+}
